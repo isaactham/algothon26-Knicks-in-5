@@ -23,7 +23,11 @@ def getMyPosition (prcSoFar):
 
     lastRet /= lNorm
 
-    rpos = np.array([int(x) for x in 5000 * lastRet / (today * volatility)])
+    signal = lastRet / volatility
+
+    signal[np.abs(signal) < 0.01] = 0
+
+    rpos = np.array([int(x) for x in 5000 * signal / today])
     currentPos = np.array([int(x) for x in currentPos+rpos])
     return currentPos
 
