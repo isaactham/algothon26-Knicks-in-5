@@ -6,14 +6,14 @@ def getMyPosition (prcSoFar):
     global currentPos
     (nins,nt) = prcSoFar.shape
 
-    if (nt < 40):
+    if (nt < 20):
         return np.zeros(nins)
 
     #todays prices are the last column of the price matrix
     today = prcSoFar[:,-1]
 
     #takes the last 21 days of prices and calculates the returns and volatility for each instrument
-    returns = np.diff(np.log(prcSoFar[:, -40:]), axis=1)
+    returns = np.diff(np.log(prcSoFar[:, -20:]), axis=1)
     volatility = np.std(returns, axis=1) + 1e-10  # add a small value to avoid division by zero
 
     
