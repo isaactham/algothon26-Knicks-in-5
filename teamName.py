@@ -14,4 +14,3 @@ def getMyPosition (prcSoFar):
     currentPos = np.array([int(x) for x in currentPos+rpos])
     return currentPos
 
-hi
