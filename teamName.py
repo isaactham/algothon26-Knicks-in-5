@@ -17,14 +17,13 @@ def getMyPosition (prcSoFar):
     volatility = np.std(returns, axis=1) + 1e-10  # add a small value to avoid division by zero
 
     
-    lastRet = np.log(today / prcSoFar[:,-15])  # calculate the return from 15 days ago to today
-
+    lastRet = np.log(today / prcSoFar[:,-15]) # calculate the return from 15 days ago to today
+    
     lNorm = np.sqrt(lastRet.dot(lastRet))
 
     lastRet /= lNorm
 
     signal = lastRet / volatility
-
     signal[np.abs(signal) < 0.01] = 0
 
     rpos = np.array([int(x) for x in 5000 * signal / today])
