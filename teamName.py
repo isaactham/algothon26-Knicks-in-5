@@ -26,9 +26,26 @@ def getMyPosition (prcSoFar):
     signal = lastRet / volatility
     signal[np.abs(signal) < 0.01] = 0
 
-    rpos = np.array([int(x) for x in 5000 * signal / today])
-    currentPos = np.array([int(x) for x in currentPos+rpos])
+    # Rank all stocks by signal
+    order = np.argsort(signal)
+
+    # Start with zero positions
+    rpos = np.zeros(nins)
+    # Pick the 10 strongest and 10 weakest
+    top = order[-10:]
+    bottom = order[:10]
+
+    # Long strongest stocks
+    rpos[top] = 5000 * signal[top] / today[top]
+
+    # Short weakest stocks
+    rpos[bottom] = 5000 * signal[bottom] / today[bottom]
+
+    currentPos = np.array([int(x) for x in currentPos + rpos])
+
     return currentPos
+
+    
 
     
 
