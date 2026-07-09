@@ -1,0 +1,42 @@
+def getMyPosition(prcSoFar):
+    global currentPos
+    nins, nt = prcSoFar.shape
+
+    # Not enough history yet? Do nothing.
+    if nt < LOOKBACK + 1:
+        return np.zeros(nins, dtype=int)
+
+    # STEP 1: the signal — z-score of today's price vs its recent past
+    window = prcSoFar[:, -LOOKBACK:]          # last 20 days, all instruments
+    mean = window.mean(axis=1)                # each instrument's recent average
+    std = window.std(axis=1)
+    std[std < 1e-8] = 1e-8                    # avoid divide-by-zero on flat series
+
+    today = prcSoFar[:, -1]
+    z = (today - mean) / std                  # how stretched is each price?
+
+    # STEP 2: signal -> desired direction
+    # High z = price is stretched UP = we expect fall = go SHORT (negative)
+    # So desired position is proportional to MINUS z
+    signal = -z
+
+    # Kill weak signals: if |z| < ENTRY_Z, don't take a position at all.
+    # This is our commission control — no trading on noise.
+    signal[np.abs(z) < ENTRY_Z] = 0.0
+
+    # STEP 3: direction -> dollar position -> share count
+    # Cap signal so one crazy z-score doesn't max everything
+    signal = np.clip(signal, -2.0, 2.0) / 2.0   # now in [-1, 1]
+
+    dollar_pos = signal * MAX_DOLLARS            # dollars to hold per instrument
+    share_pos = dollar_pos / today               # dollars -> number of shares
+    currentPos = share_pos.astype(int)           # evaluator wants integers
+
+    return currentPos
+
+mean(PL): 96.9
+return: 0.00091
+StdDev(PL): 1408.33
+annSharpe(PL): 1.09
+totDvolume: 26616748
+Score: 52.47

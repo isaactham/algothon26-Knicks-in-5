@@ -129,6 +129,7 @@ def calcPL(prcHist, numTestDays):
             todayPLL.append(todayPL)
             
     pll = np.array(todayPLL)
+    np.save("daily_pnl.npy", pll)
     plmu, plstd = (np.mean(pll), np.std(pll))
 
     # calculate annualised Sharpe
