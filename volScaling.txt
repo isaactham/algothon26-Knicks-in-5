@@ -1,5 +1,7 @@
 import numpy as np
 
+#VOl scaling on, hysteresis off
+
 
 nInst = 51
 currentPos = np.zeros(nInst)
@@ -7,12 +9,12 @@ currentPos = np.zeros(nInst)
 # --- knobs ---
 LOOKBACK = 20
 ENTRY_Z = 1.0
-EXIT_Z = 0.5
+EXIT_Z = 0.3
 MAX_DOLLARS = 9000
 
 # --- experiment toggles (2x2) ---
-USE_VOL_SCALE = False     # Run C: OFF
-USE_HYSTERESIS = True   # Run C: ON
+USE_VOL_SCALE = True     # Run B: ON
+USE_HYSTERESIS = False   # Run B: OFF
 
 def getMyPosition(prcSoFar):
     global currentPos
@@ -65,3 +67,11 @@ def getMyPosition(prcSoFar):
 
     currentPos = share_pos
     return currentPos
+
+
+mean(PL): 77.4
+return: 0.00078
+StdDev(PL): 1319.07
+annSharpe(PL): 0.93
+totDvolume: 24838206
+Score: 35.83
