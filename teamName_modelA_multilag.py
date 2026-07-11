@@ -19,20 +19,15 @@ def getMyPosition(prcSoFar):
         return currentPos
 
     logrets = np.diff(np.log(prcSoFar), axis=1)  # nInst x (nt-1)
-    marketFactor = logrets.mean(axis=0)           # simple average across instruments each day
 
-    # closed-form per-instrument beta against the market factor (vectorised, no loop)
-    mfc = marketFactor - marketFactor.mean()
-    denom = mfc.dot(mfc)
-    beta = (logrets @ mfc) / denom
-    alpha = logrets.mean(axis=1) - beta * marketFactor.mean()
+    ret1 = logrets[:, -1]
+    ret2 = logrets[:, -2]
+    ret5 = logrets[:, -5]
 
-    fitted = alpha[:, None] + beta[:, None] * marketFactor[None, :]
-    residuals = logrets - fitted                  # idiosyncratic part, factor removed
+    combinedRet = (ret1 + ret2 + ret5) / 3.0      # average of three independent lags
+    signal = -combinedRet                          # mean-reversion tilt
 
-    signal = -residuals[:, -1]                    # mean-reversion tilt on the residual only
-
-    window = residuals[:, -VOL_WINDOW:]
+    window = logrets[:, -VOL_WINDOW:]
     vol = np.std(window, axis=1)
     vol = np.where(vol < 1e-6, 1e-6, vol)
 
