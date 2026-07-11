@@ -1,15 +1,15 @@
 import numpy as np
 
 # ---------------------------------------------------------------------------
-# CONSERVATIVE version: multi-lag + 20-day reversion, moderate sizing ($20k).
-# Lower risk, StdDev lands near the competitive band. Use as an information-
-# gathering submission before committing to larger size.
+# MAX-RISK version: same signal as conservative, larger sizing ($80k).
+# Higher local score, but size amplifies whatever the hidden-set reality is,
+# in both directions. Best used once the edge is confirmed to transfer.
 # ---------------------------------------------------------------------------
 SHORT_LAGS = (1, 2, 5)
 LONG_LOOKBACK = 20
 LONG_WEIGHT = 0.5
 VOL_WINDOW = 10
-DOLLAR_TARGET = 20000
+DOLLAR_TARGET = 80000
 MIN_HISTORY = 45
 
 currentPos = None
