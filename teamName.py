@@ -5,7 +5,7 @@ nInst = 51
 currentPos = np.zeros(nInst)
 
 # --- knobs ---
-LOOKBACK = 20
+LOOKBACK = 15
 ENTRY_Z = 1.0
 EXIT_Z = 0.5
 MAX_DOLLARS = 9000
