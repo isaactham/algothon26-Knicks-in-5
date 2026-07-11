@@ -1,27 +1,52 @@
 import numpy as np
 
-#VOl scaling on, hysteresis off
-
 
 nInst = 51
-currentPos = np.zeros(nInst)
+currentPos = None
 
 # --- knobs ---
-LOOKBACK = 20
+LOOKBACK = 15
 ENTRY_Z = 1.0
-EXIT_Z = 0.3
+EXIT_Z = 0.5
 MAX_DOLLARS = 9000
 
-# --- experiment toggles (2x2) ---
-USE_VOL_SCALE = True     # Run B: ON
-USE_HYSTERESIS = False   # Run B: OFF
+# --- experiment toggles ---
+USE_VOL_SCALE = False
+USE_HYSTERESIS = True
+
+# --- regime awareness knobs & state (currently OFF) ---
+USE_REGIME = False
+REGIME_WINDOW = 20       # judge the regime on the last 20 days of our own P&L
+REGIME_SCALE = 0.75      # bet at reduced size during bad regimes
+pnl_history = []         # running record of our daily P&L
+prevPrices = None        # yesterday's prices, to compute yesterday's P&L
+
 
 def getMyPosition(prcSoFar):
-    global currentPos
+    global currentPos, pnl_history, prevPrices
     nins, nt = prcSoFar.shape
+
+    # lazy init: adapts to however many instruments the eval provides
+    if currentPos is None:
+        currentPos = np.zeros(nins)
 
     if nt < LOOKBACK + 1:
         return np.zeros(nins, dtype=int)
+
+    today = prcSoFar[:, -1]
+
+    # record what yesterday's positions just earned
+    if USE_REGIME and prevPrices is not None:
+        daily_pnl = np.sum(currentPos * (today - prevPrices))
+        pnl_history.append(daily_pnl)
+    prevPrices = today.copy()
+
+    # decide the regime scale from our trailing P&L
+    if USE_REGIME and len(pnl_history) >= REGIME_WINDOW:
+        trailing = sum(pnl_history[-REGIME_WINDOW:])
+        regime_scale = REGIME_SCALE if trailing < 0 else 1.0
+    else:
+        regime_scale = 1.0
 
     # ---------- STEP 1: signal ----------
     window = prcSoFar[:, -LOOKBACK:]
@@ -29,7 +54,6 @@ def getMyPosition(prcSoFar):
     std = window.std(axis=1)
     std[std < 1e-8] = 1e-8
 
-    today = prcSoFar[:, -1]
     z = (today - mean) / std
 
     # ---------- STEP 2: direction ----------
@@ -43,9 +67,8 @@ def getMyPosition(prcSoFar):
         signal[had_position & dead] = 0.0
         hold = had_position & weak & ~dead
     else:
-        # original behaviour: one threshold, no holding zone
         signal[np.abs(z) < ENTRY_Z] = 0.0
-        hold = np.zeros(nins, dtype=bool)   # nothing gets held
+        hold = np.zeros(nins, dtype=bool)
 
     # ---------- STEP 3: sizing ----------
     signal = np.clip(signal, -2.0, 2.0) / 2.0
@@ -59,7 +82,7 @@ def getMyPosition(prcSoFar):
     else:
         risk_scale = 1.0
 
-    dollar_pos = signal * MAX_DOLLARS * risk_scale
+    dollar_pos = signal * MAX_DOLLARS * risk_scale * regime_scale
     dollar_pos = np.clip(dollar_pos, -MAX_DOLLARS, MAX_DOLLARS)
 
     share_pos = (dollar_pos / today).astype(int)
@@ -67,11 +90,3 @@ def getMyPosition(prcSoFar):
 
     currentPos = share_pos
     return currentPos
-
-
-mean(PL): 77.4
-return: 0.00078
-StdDev(PL): 1319.07
-annSharpe(PL): 0.93
-totDvolume: 24838206
-Score: 35.83
