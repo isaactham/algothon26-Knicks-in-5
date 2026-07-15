@@ -68,6 +68,7 @@ def getMyPosition(prcSoFar):
     # ---------- sizing (REAL prices from here down) ----------
     signal = np.clip(signal, -2.0, 2.0) / 2.0
     dollar_pos = np.clip(signal * MAX_DOLLARS, -MAX_DOLLARS, MAX_DOLLARS)
+    dollar_pos = dollar_pos - dollar_pos.mean()
 
     share_pos = (dollar_pos / today_price).astype(int)
     share_pos[hold] = currentPos[hold].astype(int)
