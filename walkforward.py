@@ -1,7 +1,7 @@
 import importlib
 import numpy as np
 import pandas as pd
-import teamName as teamName
+import teamNameBlend as teamName
 
 # --- same constants as the official eval.py ---
 pricesFile = "./prices.txt"

@@ -11,7 +11,7 @@ import numpy as np
 currentPos = None
 
 LOOKBACK = 15
-ENTRY_Z = 1.25
+ENTRY_Z = 1.7
 EXIT_Z = 0.5
 MAX_DOLLARS = 9000
 POS_LIMIT_DOLLARS = 10000

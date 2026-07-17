@@ -11,7 +11,7 @@ before trusting any charts.
 """
 
 import numpy as np
-from teamName import getMyPosition   # <-- change to your strategy file's name
+from teamNameXsec import getMyPosition   # <-- change to your strategy file's name
 
 COMM_RATE = 0.0005   # competition commission rate — match your backtester
 
