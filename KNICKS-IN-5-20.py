@@ -15,12 +15,9 @@ import numpy as np
 #   positive (min 258).
 # - Position: predicted residual, scaled by mean |pred| to gross
 #   40k/instrument, capped, dollar-netted, re-capped.
-# - Selected by pre-registered rule on lam {0.3,1,3} x gross
-#   {40k,80k,160k}: best NEW-chunk score subject to OLD-chunk score
-#   >= 90% of grid max; ties toward more shrinkage, less gross.
-# - Validated (this exact pipeline, daily refit): OLD chunk (150-499)
-#   score ~515, NEW chunk (499-749) score ~479, all 11 walkforward
-#   windows positive (worst ~213). Commissions and caps included.
+# - Selection: C=4 from pre-registered C in {4,6,8} (dominant on both
+#   chunks), confirmed as a plateau vs C in {3,5}. Change from the
+#   prior live model is this shrinkage schedule only.
 # ============================================================
 
 LAM_C = 4.0
