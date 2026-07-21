@@ -6,13 +6,13 @@ Participants: write getMyPosition(prcSoFar) in teamName.py and update the import
 
 import numpy as np
 import pandas as pd
-from Smoothing import getMyPosition as getPosition
+from Portfolios.Var.varDenoise import getMyPosition as getPosition
 
 nInst = 0
 nt = 0
 
 pricesFile = "./prices.txt"
-numTestDays = 250
+numTestDays = 450
 
 # parameter for scoring function
 scoreDefaultParam = 1.0
