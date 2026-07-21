@@ -16,7 +16,7 @@ import numpy as np
 LAM = 1.0
 GROSS_SCALE = 40000.0
 MIN_HISTORY = 110
-CORR_SPACE = False        # <-- the one switch. Flip to False to get the old model back.
+CORR_SPACE = 10        # <-- the one switch. Flip to False to get the old model back.
 
 CAP = np.full(51, 10_000.0)
 CAP[0] = 100_000.0
